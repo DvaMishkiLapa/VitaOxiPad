@@ -36,6 +36,7 @@ struct ButtonsData
     square: bool;
     vol_up: bool;
     vol_down: bool;
+    ps: bool;
 }
 
 struct Vector3

@@ -1,4 +1,3 @@
-
 #include <psp2/net/netctl.h>
 #include <psp2/power.h>
 

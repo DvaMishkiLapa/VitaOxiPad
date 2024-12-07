@@ -312,6 +312,8 @@ impl VitaVirtualDevice<&ConfigBuilder> for VitaDevice {
             self.touch_start_time = None;
         }
 
+        special_buttons = special_buttons.ps_home(report.buttons.ps);
+
         self.touch_state = is_touching;
 
         // Создаем touchpad report

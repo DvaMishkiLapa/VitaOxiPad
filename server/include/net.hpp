@@ -1,7 +1,6 @@
 #ifndef NET_HPP
 #define NET_HPP
 
-#include <psp2/net/net.h>
 #include <psp2/net/netctl.h>
 
 #include <atomic>
