@@ -1,0 +1,17 @@
+kctrl:
+  attributes: 0
+  version:
+    major: 1
+    minor: 0
+  main:
+    start: module_start
+    stop: module_stop
+  libraries:
+    kctrlForKernel:
+      syscall: true
+      functions:
+        - kctrlScreenOn
+        - kctrlScreenOff
+        - kctrlToggleScreen
+        - kctrlGetCtrlData
+        - kctrlVersion

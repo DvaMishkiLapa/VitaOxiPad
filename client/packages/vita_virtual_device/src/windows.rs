@@ -12,7 +12,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
 };
 
 use crate::virtual_button::{Button, DpadDirection};
-use crate::virtual_config::{Config, ConfigBuilder, TouchConfig, TriggerConfig};
+use crate::virtual_config::{Config, ConfigBuilder, TouchConfig};
 use crate::virtual_touch::{Point, TouchAction};
 use crate::virtual_utils::{compute_dpad_direction, get_pressed_buttons};
 use crate::{f32_to_i16, VitaVirtualDevice, FRONT_TOUCHPAD_RECT, REAR_TOUCHPAD_RECT};
@@ -270,23 +270,11 @@ impl VitaVirtualDevice<&ConfigBuilder> for VitaDevice {
             &self.config.front_touch_config,
             &mut buttons,
         );
-
         process_touch_reports(
             &report.back_touch.reports,
             &self.config.rear_touch_config,
             &mut buttons,
         );
-
-        // Trigger processing for Trigger configuration
-        let (mut pwr_trigger_l, mut pwr_trigger_r) = (0u8, 0u8);
-        if let TriggerConfig::Trigger = self.config.trigger_config {
-            if report.buttons.lt {
-                pwr_trigger_l = 255;
-            }
-            if report.buttons.rt {
-                pwr_trigger_r = 255;
-            }
-        }
 
         // Handling special touchpad buttons
         let is_touching = match (
@@ -300,6 +288,7 @@ impl VitaVirtualDevice<&ConfigBuilder> for VitaDevice {
 
         let mut special_buttons = DS4SpecialButtons::new();
 
+        // Touch click emulation
         if is_touching && !self.touch_state {
             self.touch_start_time = Some(Instant::now());
         } else if !is_touching && self.touch_state {
@@ -311,6 +300,8 @@ impl VitaVirtualDevice<&ConfigBuilder> for VitaDevice {
             }
             self.touch_start_time = None;
         }
+
+        special_buttons = special_buttons.ps_home(report.buttons.ps);
 
         self.touch_state = is_touching;
 
@@ -326,6 +317,20 @@ impl VitaVirtualDevice<&ConfigBuilder> for VitaDevice {
         let gyro_x_i16 = f32_to_i16(report.motion.gyro.x, -35.0, 35.0);
         let gyro_y_i16 = f32_to_i16(-report.motion.gyro.y, -35.0, 35.0); //inverted
         let gyro_z_i16 = f32_to_i16(report.motion.gyro.z, -35.0, 35.0);
+
+        // Trigger processing for Trigger configuration
+        let (pwr_trigger_l, pwr_trigger_r) = (
+            if buttons | DS4Buttons::TRIGGER_LEFT == buttons {
+                255
+            } else {
+                0
+            },
+            if buttons | DS4Buttons::TRIGGER_RIGHT == buttons {
+                255
+            } else {
+                0
+            },
+        );
 
         let report = DS4ReportExBuilder::new()
             .thumb_lx(report.lx)
