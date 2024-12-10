@@ -1,4 +1,6 @@
 #include <psp2/kernel/processmgr.h>
+#include <psp2/motion.h>
+#include <psp2/touch.h>
 
 #include <common.h>
 
@@ -195,12 +197,18 @@ int net_thread(__attribute__((unused)) unsigned int arglen, void *argp) {
   static flatbuffers::FlatBufferBuilder pad_data(512);       // keystroke data storage
   static flatbuffers::FlatBufferBuilder handshake_data(128); // response to heartbeat
 
+  SceCtrlData pad;
+  SceMotionState motion_data;
+  SceTouchData touch_data_front, touch_data_back;
+
   // Main loop of the network
   // Ends if there was a sceNetEpollWait error or the thread was asked to stop
   // via g_net_thread_running
   while (g_net_thread_running.load()) {
     // Power tick for sleep disabling, update battery
     sceKernelPowerTick(SCE_KERNEL_POWER_TICK_DISABLE_AUTO_SUSPEND);
+    get_ctrl(&pad, &motion_data, &touch_data_front, &touch_data_back);
+    shared_data->pad_data = pad;
 
     // Receiving TCP events
     n = sceNetEpollWait(epoll, events, MAX_EPOLL_EVENTS, timeout);
@@ -323,9 +331,11 @@ int net_thread(__attribute__((unused)) unsigned int arglen, void *argp) {
     }
 
     // Sending push data if the client is connected
-    if (client->state() == Client::State::Connected && client->is_polling_time_elapsed()) {
+    if (client->state() == Client::State::Connected && client->is_polling_time_elapsed() &&
+        shared_data->pad_mode) {
       if (server_udp_fd >= 0) {
-        get_ctrl_as_netprotocol(pad_data, shared_data);
+        ctrl_as_netprotocol(&pad, &motion_data, &touch_data_front, &touch_data_back, pad_data,
+                            shared_data->battery_level);
         client->update_sent_data_time();
         auto client_addr = client->data_conn_info();
         SceNetSockaddr *need_client_addr = reinterpret_cast<SceNetSockaddr *>(&client_addr);
@@ -346,7 +356,7 @@ int net_thread(__attribute__((unused)) unsigned int arglen, void *argp) {
     }
 
     timeout = client->remaining_polling_time();
-    sceKernelDelayThread(10 * 1000);
+    sceKernelDelayThread(5 * 1000);
   }
 
   sceNetCtlInetUnregisterCallback(cbid);

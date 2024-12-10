@@ -91,10 +91,10 @@ pub fn load_config() -> color_eyre::Result<Config> {
     }
 
     // Add the source for environment variables
-    settings = settings.add_source(Environment::with_prefix("VITAOXIPAD"));
+    settings = settings.add_source(Environment::with_prefix("VITA_"));
 
     // Check if environment variables are found
-    if env::vars().any(|(key, _)| key.starts_with("VITAOXIPAD_")) {
+    if env::vars().any(|(key, _)| key.starts_with("VITA_")) {
         println!("Environment variables found. They will take precedence over the config file.");
     }
 
