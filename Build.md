@@ -56,16 +56,16 @@ sudo dnf install make automake gcc gcc-c++ cargo
 
 #### 1.1.2 flatc compilation
 
-You need to build [`flatc` v25.2.10](https://flatbuffers.dev/flatbuffers_guide_building.html) of a certain version from source code.
+You need to build [`flatc` v24.3.25](https://flatbuffers.dev/flatbuffers_guide_building.html) of a certain version from source code.
 
 ```bash
-git clone --branch v25.2.10 https://github.com/google/flatbuffers.git && cd flatbuffers
+git clone --branch v24.3.25 https://github.com/google/flatbuffers.git && cd flatbuffers
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
 make -j
 ./flattests # this is quick, and should print "ALL TESTS PASSED"
 sudo make install
 sudo ldconfig
-flatc --version # "flatc version v25.2.10"
+flatc --version # "flatc version v24.3.25"
 ```
 
 For Linux:
@@ -84,7 +84,7 @@ make install
 And at the end check the `flatc` version:
 
 ```bash
-flatc --version # "flatc version v25.2.10"
+flatc --version # "flatc version v24.3.25"
 ```
 
 ### 1.2 Clone and compile client
@@ -120,7 +120,7 @@ You can check the finished binary by running in it:
   ./vdpm flatbuffers
   ```
 
-4. You should have [`flatc` v25.2.10](https://flatbuffers.dev/flatbuffers_guide_building.html) installed as in the paragraph
+4. You should have [`flatc` v24.3.25](https://flatbuffers.dev/flatbuffers_guide_building.html) installed as in the paragraph
   [1.1.2 flatc compilation](#112-flatc-compilation), but tailored to where you want to compile the server part;
 
 5. Build the project with the following commands:

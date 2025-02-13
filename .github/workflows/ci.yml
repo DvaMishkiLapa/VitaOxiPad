@@ -55,7 +55,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y make git-core cmake python3
-          git clone --branch v25.2.10 https://github.com/google/flatbuffers.git
+          git clone --branch v24.3.25 https://github.com/google/flatbuffers.git
           cd flatbuffers
           cmake -G "Unix Makefiles"
           make -j
@@ -128,7 +128,7 @@ jobs:
       - name: Install flatc for x64
         run: |
           export PATH="${{ steps.msys2.outputs.msys2-location }}/mingw64/bin:${PATH}"
-          git clone --branch v25.2.10 https://github.com/google/flatbuffers.git flatbuffers_x64
+          git clone --branch v24.3.25 https://github.com/google/flatbuffers.git flatbuffers_x64
           cd flatbuffers_x64
           cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${{ steps.msys2.outputs.msys2-location }}/mingw64" -DCMAKE_BUILD_TYPE=Release
           make -j
@@ -137,7 +137,7 @@ jobs:
       - name: Install flatc for x32
         run: |
           export PATH="${{ steps.msys2.outputs.msys2-location }}/mingw32/bin:${PATH}"
-          git clone --branch v25.2.10 https://github.com/google/flatbuffers.git flatbuffers_x32
+          git clone --branch v24.3.25 https://github.com/google/flatbuffers.git flatbuffers_x32
           cd flatbuffers_x32
           cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${{ steps.msys2.outputs.msys2-location }}/mingw32" -DCMAKE_BUILD_TYPE=Release
           make -j
