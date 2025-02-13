@@ -53,7 +53,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y make git-core cmake python3
-          git clone --branch v24.3.25 https://github.com/google/flatbuffers.git
+          git clone --branch v25.2.10 https://github.com/google/flatbuffers.git
           cd flatbuffers
           cmake -G "Unix Makefiles"
           make -j
@@ -105,7 +105,6 @@ jobs:
             mingw-w64-i686-gcc
             mingw-w64-x86_64-rust
             mingw-w64-i686-rust
-            mingw-w64-x86_64-flatbuffers
             make
             wget
             cmake
@@ -122,9 +121,25 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -S --noconfirm mingw-w64-x86_64-rust mingw-w64-i686-rust mingw-w64-x86_64-flatbuffers mingw-w64-x86_64-cargo-c mingw-w64-i686-cargo-c make wget cmake
-          wget https://repo.msys2.org/mingw/mingw32/mingw-w64-i686-flatbuffers-23.5.26-2-any.pkg.tar.zst
-          pacman -U --noconfirm mingw-w64-i686-flatbuffers-23.5.26-2-any.pkg.tar.zst
+          pacman -S --noconfirm mingw-w64-x86_64-rust mingw-w64-i686-rust mingw-w64-x86_64-cargo-c mingw-w64-i686-cargo-c make wget cmake
+
+      - name: Install flatc for x64
+        run: |
+          export PATH="${{ steps.msys2.outputs.msys2-location }}/mingw64/bin:${PATH}"
+          git clone --branch v25.2.10 https://github.com/google/flatbuffers.git flatbuffers_x64
+          cd flatbuffers_x64
+          cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${{ steps.msys2.outputs.msys2-location }}/mingw64" -DCMAKE_BUILD_TYPE=Release
+          make -j
+          make install
+
+      - name: Install flatc for x32
+        run: |
+          export PATH="${{ steps.msys2.outputs.msys2-location }}/mingw32/bin:${PATH}"
+          git clone --branch v25.2.10 https://github.com/google/flatbuffers.git flatbuffers_x32
+          cd flatbuffers_x32
+          cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${{ steps.msys2.outputs.msys2-location }}/mingw32" -DCMAKE_BUILD_TYPE=Release
+          make -j
+          make install
 
       - name: Build Windows x64 Client
         run: |
