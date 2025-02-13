@@ -21,28 +21,30 @@ on:
       - 'README.md'
       - 'gyro_accel_tester'
       - 'demo'
+  release:
+    types: [published]
 
 jobs:
   update_release_tags:
+    if: ${{ github.event_name != 'release' }}
     runs-on: ubuntu-latest
     steps:
-    - name: Create development latest release
-      if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
-      uses: "slord399/action-automatic-releases@v1.0.1"
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "dev_latest"
-        prerelease: true
-        title: "Development latest build"
-
-    - name: Create latest stable release
-      if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
-      uses: "slord399/action-automatic-releases@v1.0.1"
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
-        prerelease: true
-        title: "Latest stable build"
+      - name: Create development latest release
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
+        uses: slord399/action-automatic-releases@v1.0.1
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: dev_latest
+          prerelease: true
+          title: "Development latest build"
+      - name: Create latest stable release
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+        uses: slord399/action-automatic-releases@v1.0.1
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: latest
+          prerelease: true
+          title: "Latest stable build"
 
   build_vita_server:
     runs-on: ubuntu-latest
@@ -200,7 +202,7 @@ jobs:
           path: ./release
 
       - name: Upload latest development release
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev'}}
+        if: ${{ github.event_name != 'release' && github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -211,7 +213,7 @@ jobs:
           prerelease: true
 
       - name: Upload latest stable release
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main'}}
+        if: ${{ github.event_name != 'release' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -221,23 +223,34 @@ jobs:
           file_glob: true
           prerelease: true
 
-      - name: Check Dev secret availability
+      - name: Upload release from tag
+        if: ${{ github.event_name == 'release' }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./release/*
+          tag: ${{ github.event.release.tag_name }}
+          overwrite: true
+          file_glob: true
+          prerelease: true
+
+      - name: Check VirusTotal secret availability
         id: secret-check
         shell: bash
         run: |
-          if [ "${{ secrets.VT_API_KEY }}" != '' ]; then
-            echo "vt_available=true" >> $GITHUB_OUTPUT;
+          if [ "${{ secrets.VT_API_KEY }}" != "" ]; then
+            echo "vt_available=true" >> $GITHUB_OUTPUT
           else
-            echo "vt_available=false" >> $GITHUB_OUTPUT;
+            echo "vt_available=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Virustotal Windows binary files scan
-        if: ${{steps.secret-check.outputs.vt_available == 'true' && github.event_name != 'pull_request' }}
+      - name: VirusTotal Windows binary files scan
+        if: ${{ steps.secret-check.outputs.vt_available == 'true' && github.event_name != 'pull_request' }}
         uses: cssnr/virustotal-action@v1.2.0
         with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            vt_api_key: ${{ secrets.VT_API_KEY }}
-            update_release: true
-            file_globs: |
-              ./release/VitaOxiPad-x64.exe
-              ./release/VitaOxiPad-x32.exe
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          vt_api_key: ${{ secrets.VT_API_KEY }}
+          update_release: true
+          file_globs: |
+            ./release/VitaOxiPad-x64.exe
+            ./release/VitaOxiPad-x32.exe
