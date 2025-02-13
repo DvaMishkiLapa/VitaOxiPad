@@ -9,8 +9,8 @@ edition = "2021"
 cfg-if = "1.0.0"
 derive_builder = "0.20.2"
 rstar = { version = "0.12.2", features = ["serde"] }
-serde = { version = "1.0.216", features = ["serde_derive"] }
-thiserror = "2.0.7"
+serde = { version = "1.0.217", features = ["serde_derive"] }
+thiserror = "2.0.11"
 vita_reports = { version = "0.1.0", path = "../vita_reports" }
 
 [target.'cfg(target_os = "linux")'.dependencies]
@@ -18,7 +18,7 @@ input-linux = "0.7.1"
 
 [target.'cfg(windows)'.dependencies]
 vigem-client = { git = "https://github.com/santarl/vigem_client_rust/" }
-windows = { version = "0.58", features = [
+windows = { version = "0.59", features = [
     "Win32_Foundation",
     "Win32_Media_Audio",
     "Win32_Media_Audio_Endpoints",
