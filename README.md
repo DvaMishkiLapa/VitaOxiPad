@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="https://img.shields.io/github/downloads/DvaMishkiLapa/VitaOxiPad/total?label=Downloads"/>
+  <img src="https://img.shields.io/github/v/release/DvaMishkiLapa/VitaOxiPad?&label=Release"/>
+  <img src="https://img.shields.io/badge/License-The_Happy_Bunny_License-blue.svg"/>
+</p>
+
 # VitaOxiPad <img align="right" width="128" height="128" src="./server/sce_sys/icon0.png" />
 
 Turns your PS Vita into (almost) a DualShock 4!
