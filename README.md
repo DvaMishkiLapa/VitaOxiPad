@@ -129,7 +129,7 @@ using the `-c`, `--config` flags or conifguration file:
 | `front_touchpad`   |      L2\R2      |         DualShock 4 digitizer          | upper area - L1\R1, lower area - L3\R3 |
 
 To better understand the emulation behavior,
-you can run [3D Controller Overlay](http://www.3d-controller-overlay.org/) after connecting your PS Vita for Windows
+you can run [3D Controller Overlay](https://github.com/larfingshnew/3d-controller-overlay) after connecting your PS Vita for Windows
 or [evtest-qt](https://github.com/Grumbel/evtest-qt) for Linux.
 
 ## 4. What works
